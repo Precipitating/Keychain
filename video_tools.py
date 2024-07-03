@@ -6,8 +6,11 @@ import numpy as np
 
 
 def remove_audio(videoPath: str, outputPath: str):
-    finalVid = VideoFileClip(videoPath).without_audio()
-    finalVid.write_videofile(outputPath, fps=60)
+    finalVid = VideoFileClip(videoPath)
+    finalVidAudioless = finalVid.without_audio()
+    finalVidAudioless.write_videofile(outputPath, fps=60)
+    finalVid.close()
+    finalVidAudioless.close()
 
 
 def bgm_add(videoPath: str, audioPath: str, outputPath: str):
@@ -16,18 +19,28 @@ def bgm_add(videoPath: str, audioPath: str, outputPath: str):
     # loop audio to video length
     loopedAudio = audio_loop(audioFile, duration=videoFile.duration)
     # combine both tracks
-    addedAudio = CompositeAudioClip([videoFile.audio, loopedAudio])
+    if videoFile.audio is not None:
+        addedAudio = CompositeAudioClip([videoFile.audio, loopedAudio])
+    else:
+        addedAudio = CompositeAudioClip([loopedAudio])
     # set to source video
     final = videoFile.set_audio(addedAudio)
     # save to disk
     final.write_videofile(outputPath, fps=60)
+    audioFile.close()
+    videoFile.close()
 
 
 def extract_audio(filePath: str, outputPath: str):
     mp3Format = outputPath.replace(helper_functions.extract_file_format(outputPath), "")
     mp3Format += ".mp3"
     print(mp3Format)
-    VideoFileClip(filePath).audio.write_audiofile(mp3Format)
+    vid = VideoFileClip(filePath)
+    audio = vid.audio
+    audio.write_audiofile(mp3Format)
+    audio.close()
+    vid.close()
+
 
     return mp3Format
 

@@ -285,7 +285,8 @@ def run_bot():
 
         # save attachment for processing
         downloadPath = "videos/" + video.filename
-        audioDownloadPath = "bgm/" + audio.filename
+        if choices.value == 2:
+            audioDownloadPath = "bgm/" + audio.filename
         outputPath = "videooutput/" + video.filename
         await video.save(downloadPath)
 
