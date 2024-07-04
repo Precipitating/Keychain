@@ -4,7 +4,10 @@
 DISCORD_TOKEN,\
 OWNER_ID, (this is Discord ID)\
 OPENAI_API_KEY\
-APEX_API_KEY
+APEX_API_KEY\
+Also requires these forked libraries for compatibility: \
+https://github.com/Precipitating/Button_paginator_deferred \
+https://github.com/Precipitating/ShazamIO-Pydantic2 
 
 ## Current features:
 ### Translation:
