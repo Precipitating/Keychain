@@ -1,6 +1,5 @@
 import asyncio
 import aiohttp
-import pytube.exceptions
 from pytubefix import YouTube
 from typing import Final
 

@@ -1,8 +1,12 @@
 import discord
+from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
+
 import helper_functions
 from moviepy.editor import VideoFileClip, AudioFileClip
 from moviepy.audio.AudioClip import CompositeAudioClip
 import numpy as np
+
+from twitter_downloader import DOWNLOAD_PATH
 
 
 def remove_audio(videoPath: str, outputPath: str):
@@ -41,7 +45,6 @@ def extract_audio(filePath: str, outputPath: str):
     audio.close()
     vid.close()
 
-
     return mp3Format
 
 
@@ -55,3 +58,15 @@ def audio_concatenate(clips):
 def audio_loop(clip, duration):
     nloops = int(duration / clip.duration) + 1
     return audio_concatenate(nloops * [clip]).set_duration(duration)
+
+
+def trim_video(downloadPath: str, start: int, end: int, outputPath: str):
+    # check if duration is valid
+    clip = VideoFileClip(downloadPath)
+    if end > clip.duration:
+        end = clip.duration
+    if start < 0 or start > clip.duration:
+        start = 0
+    clip.close()
+
+    ffmpeg_extract_subclip(downloadPath, start, end, outputPath)

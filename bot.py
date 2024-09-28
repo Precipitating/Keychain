@@ -411,6 +411,7 @@ def run_bot():
             await file.save(filePath)
             # identify song
             embed = await shazam_functions.file_shazam(filePath)
+            os.remove(filePath)
 
         # if link is given ONLY
         elif link is not None and file is None:
@@ -552,5 +553,34 @@ def run_bot():
             if choices.value == 2:
                 await interaction.followup.send(file=discord.File(face_swapper.FACE_SWAP_SAVE_PATH2))
                 os.remove(face_swapper.FACE_SWAP_SAVE_PATH2)
+
+    @tree.command(name="trim_video", description='Trim a video')
+    @app_commands.describe(start="Start range (seconds)", end = "End range (seconds)")
+    async def twitter_embed(interaction: discord.Interaction,
+                            video: discord.Attachment,
+                            start: int,
+                            end: int):
+
+        await interaction.response.defer()
+
+        # make sure its a valid format
+        if not helper_functions.is_video(video):
+            await interaction.followup.send_message("Provide a valid video file (.mp4/.avi/.webm/.mov)")
+            return
+
+        # make sure start range is not bigger than end
+        if start > end:
+            await interaction.followup.send(f"Error: Start value ({start}) must be less than or equal to end value ({end}).")
+            return
+
+
+        # save attachment for processing
+        downloadPath = "videos/" + video.filename
+        outputPath = "videooutput/" + video.filename
+        await video.save(downloadPath)
+        video_tools.trim_video(downloadPath, start, end, outputPath)
+        await interaction.followup.send(file=discord.File(outputPath))
+        os.remove(outputPath)
+        os.remove((downloadPath))
 
     client.run(token=TOKEN)
